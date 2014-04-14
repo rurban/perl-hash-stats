@@ -93,18 +93,26 @@ It depends on the fill factor, the quality of the hash function and the key.
 This is the average case. Worst cases can be produced by guessing the random hash
 seed from leakage of sorting order (unsorted keys in JSON, YAML, RSS interfaces, or such),
 (_or even fooling with the ENV or process memory_), and then creating colliding keys, which
-would lead to exponential time DOS attacks with linear time attack costs. [RT #22371](https://rt.perl.org/Public/Bug/Display.html?id=22371)
+would lead to exponential time DOS attacks with linear time attack costs. [RT #22371](https://rt.perl.org/Public/Bug/Display.html?id=22371) and ["Denial of Service via Algorithmic Complexity Attacks", S Crosby, D Wallach,m Rice 1993](http://www.rootsecure.net/content/downloads/pdf/dos_via_algorithmic_complexity_attack.pdf).
 Long running perl processes with publicly exposed sorting order and input acceptance of hash keys
 should really be avoided without proper countermeasures. PHP e.g. does MAX\_POST\_SIZE.
+How to get the private random seed is e.g. described in ["REMOTE ALGORITHMIC COMPLEXITY ATTACKS AGAINST
+RANDOMIZED HASH TABLES", N Bar-Yosef, A Wool - 2009 - Springer](https://www.eng.tau.ac.il/~yash/C2_039_Wool.pdf)
 Perl and similar dynamic languages really need to improve their collision algorithm, and choose
 a combination of fast and good enough hash function. None of this is currently implemented.
+Most technical papers accept degeneration into linear search for bucket collisions as is.
+Notably e.g. even the Linux kernel [F. Weimer, “Algorithmic complexity attacks and the
+linux networking code”, May 2003](http://www.enyo.de/fw/security/notes/linux-dst-cache-dos.html).
+DJB's DNS server has an explicit check for "hash flooding" attempts.
 
 For city there currently exists a simple universal function to easily create collisions per seed.
 Note that this exists for every hash function, just encode your hash SAT solver-friendly and look
 at the generated model. It is even incredibly simple if you calculate only the needed last bits
 dependent on the hash table size (8-15 bits).
 So striking out city for such security claims does not hold.
-The code is just not out yet, and the costs for some slower hash functions might be too high.
+The code is just not out yet, and the costs for some slower (cryptographically secure)
+hash functions might be too high.
+
 
 See [blogs.perl.org: statistics-for-perl-hash-tables](http://blogs.perl.org/users/rurban/2014/04/statistics-for-perl-hash-tables.html) for a more detailled description.
 
