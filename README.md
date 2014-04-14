@@ -9,16 +9,18 @@ Average case (perl core testsuite)
 
 | Hash Function		| collisions| cycles/hash |
 |:------------------|----------:|------------:|
-| CRC32				| 1.066		| 29.78		  |
-| SUPERFAST			| 1.081		| 34.72 	  |
-| ONE_AT_A_TIME_HARD| 1.092		| 83.75		  |
+| CRC32.1			| 1.066		|  29.78	  |
+| CRC32				| 1.078		|  29.78	  |
+| SUPERFAST			| 1.081		|  34.72 	  |
+| SDBM.1			| 1.082		|  30.57   	  |
+| ONE_AT_A_TIME_HARD| 1.092		|  83.75	  |
 | SIPHASH			| 1.091		| 154.68	  |
-| ONE_AT_A_TIME		| 1.098		| 43.62       |
-| ONE_AT_A_TIME_OLD	| 1.100 	| 43.62   	  |
-| MURMUR3			| 1.105		| 34.03 	  |
-| DJB2				| 1.131		| 44.73   	  |
-| SDBM				| 1.146		| 30.57   	  |
-| CITY				|   ?		| 30.13	      |
+| ONE_AT_A_TIME		| 1.098		|  43.62      |
+| ONE_AT_A_TIME_OLD	| 1.100 	|  43.62   	  |
+| MURMUR3			| 1.105		|  34.03 	  |
+| DJB2				| 1.131		|  44.73   	  |
+| SDBM				| 1.146		|  30.57   	  |
+| CITY				|   ?		|  30.13      |
 
 
 Less collisions are better, less cycles/hash is faster.
@@ -37,6 +39,8 @@ A hash table size of 7 uses the last 3 bits of the hash function result,
 * cycles/hash is measured with [smhasher](https://github.com/rurban/smhasher)
 for 10 byte keys. (see "Small key speed test")
 * SDBM and DJBJ did not produce a workable miniperl. Needed to [patch](https://github.com/rurban/perl-hash-stats/blob/master/sdbm%2Bdjb2.patch) them. Seeing that a HASH=0, effectively creating a long list of linear collisions in HvARRAY[0], does not work in current perl5, makes me feel bad. Note that seed + len is to prevent from the \0 attack.
+* SDBM.1 adds the len to the seed, SDBM not.
+* CRC32 adds the len to the seed, CRC32.1 not.
 
 Hash table sizes
 ----------------
@@ -94,6 +98,11 @@ Long running perl processes with publicly exposed sorting order and input accept
 should really be avoided without proper countermeasures. PHP e.g. does MAX\_POST\_SIZE.
 Perl and similar dynamic languages really need to improve their collision algorithm, and choose
 a combination of fast and good enough hash function. None of this is currently implemented.
+
+For city there currently exists a simple universal function to easily create collisions per seed.
+Note that this exists for every hash function, just encode your hash SAT solver-friendly and look
+at the generated model. So striking out city for such security claims does not hold.
+The code is just not out yet, and the costs for some slower hash functions might be too high.
 
 See [blogs.perl.org: statistics-for-perl-hash-tables](http://blogs.perl.org/users/rurban/2014/04/statistics-for-perl-hash-tables.html) for a more detailled description.
 
