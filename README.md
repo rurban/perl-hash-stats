@@ -97,7 +97,8 @@ would lead to exponential time DOS attacks with linear time attack costs. [RT #2
 Long running perl processes with publicly exposed sorting order and input acceptance of hash keys
 should really be avoided without proper countermeasures. PHP e.g. does MAX\_POST\_SIZE.
 How to get the private random seed is e.g. described in ["REMOTE ALGORITHMIC COMPLEXITY ATTACKS AGAINST
-RANDOMIZED HASH TABLES", N Bar-Yosef, A Wool - 2009 - Springer](https://www.eng.tau.ac.il/~yash/C2_039_Wool.pdf)
+RANDOMIZED HASH TABLES", N Bar-Yosef, A Wool - 2009 - Springer](https://www.eng.tau.ac.il/~yash/C2_039_Wool.pdf).
+
 Perl and similar dynamic languages really need to improve their collision algorithm, and choose
 a combination of fast and good enough hash function. None of this is currently implemented.
 Most technical papers accept degeneration into linear search for bucket collisions as is.
