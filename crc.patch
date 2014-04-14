@@ -48,7 +48,7 @@ index 191912a..38134bc 100644
 +
 +PERL_STATIC_INLINE U32
 +S_perl_hash_crc32(const unsigned char * const seed, const unsigned char *str, const STRLEN inlen) {
-+    U32 hash = *((U32*)seed + inlen);
++    U32 hash = *((U32*)seed) + inlen;
 +    const char* buf = (const char*)str;
 +    STRLEN len = inlen;
 +
