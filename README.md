@@ -93,7 +93,7 @@ It depends on the fill factor, the quality of the hash function and the key.
 This is the average case. Worst cases can be produced by guessing the random hash
 seed from leakage of sorting order (unsorted keys in JSON, YAML, RSS interfaces, or such),
 (_or even fooling with the ENV or process memory_), and then creating colliding keys, which
-would lead to exponential time DOS attacks with linear time attack costs. [RT #22371](https://rt.perl.org/Public/Bug/Display.html?id=22371) and ["Denial of Service via Algorithmic Complexity Attacks", S Crosby, D Wallach,m Rice 1993](http://www.rootsecure.net/content/downloads/pdf/dos_via_algorithmic_complexity_attack.pdf).
+would lead to exponential time DOS attacks with linear time attack costs. [RT #22371](https://rt.perl.org/Public/Bug/Display.html?id=22371) and ["Denial of Service via Algorithmic Complexity Attacks", S Crosby, D Wallach, Rice 1993](http://www.rootsecure.net/content/downloads/pdf/dos_via_algorithmic_complexity_attack.pdf).
 Long running perl processes with publicly exposed sorting order and input acceptance of hash keys
 should really be avoided without proper countermeasures. PHP e.g. does MAX\_POST\_SIZE.
 How to get the private random seed is e.g. described in ["REMOTE ALGORITHMIC COMPLEXITY ATTACKS AGAINST
