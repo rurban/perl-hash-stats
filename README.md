@@ -31,9 +31,9 @@ The perl5 testsuite has a key size of median = 20, and avg of 133.2. The most co
 * collisions are the number of linked list iterations per hash table usage.
 * cycles/hash is measured with [smhasher](https://github.com/rurban/smhasher)
 for 10 byte keys. (see "Small key speed test")
-* SDBM and DJBJ did not produce a workable miniperl. Needed to [patch](https://github.com/rurban/perl-hash-stats/blob/master/sdbm%2Bdjb2.patch) them. Seeing that a HASH=0, effectively creating a long list of linear collisions in HvARRAY[0], does not work iun current perl5, makes me feel bad. Note that seed + len is to prevent from the \0 attack.
+* SDBM and DJBJ did not produce a workable miniperl. Needed to [patch](https://github.com/rurban/perl-hash-stats/blob/master/sdbm%2Bdjb2.patch) them. Seeing that a HASH=0, effectively creating a long list of linear collisions in HvARRAY[0], does not work in current perl5, makes me feel bad. Note that seed + len is to prevent from the \0 attack.
 
-See [statistics-for-perl-hash-tables](http://blogs.perl.org/users/rurban/2014/04/statistics-for-perl-hash-tables.html)
+See [blogs.perl.org: statistics-for-perl-hash-tables](http://blogs.perl.org/users/rurban/2014/04/statistics-for-perl-hash-tables.html)
 
 See
 ---
