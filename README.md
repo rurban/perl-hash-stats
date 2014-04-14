@@ -101,7 +101,9 @@ a combination of fast and good enough hash function. None of this is currently i
 
 For city there currently exists a simple universal function to easily create collisions per seed.
 Note that this exists for every hash function, just encode your hash SAT solver-friendly and look
-at the generated model. So striking out city for such security claims does not hold.
+at the generated model. It is even incredibly simple if you calculate only the needed last bits
+dependent on the hash table size (8-15 bits).
+So striking out city for such security claims does not hold.
 The code is just not out yet, and the costs for some slower hash functions might be too high.
 
 See [blogs.perl.org: statistics-for-perl-hash-tables](http://blogs.perl.org/users/rurban/2014/04/statistics-for-perl-hash-tables.html) for a more detailled description.
