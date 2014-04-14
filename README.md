@@ -9,7 +9,7 @@ Average case (perl core testsuite)
 
 | Hash Function		| collisions| cycles/hash |
 |:------------------|----------:|------------:|
-| CRC32				| 1.078		| 29.78		  |
+| CRC32				| 1.066		| 29.78		  |
 | SUPERFAST			| 1.081		| 34.72 	  |
 | ONE_AT_A_TIME_HARD| 1.092		| 83.75		  |
 | SIPHASH			| 1.091		| 154.68	  |
@@ -71,15 +71,15 @@ Number of collisions with CRC32
 
 | collisions|     count |
 |:---------:|----------:|
-|   	0	|  26895000 |
-|   	1	|  98179685 |
-|   	2	|  25832401 |
-|   	3	|   5582369 |
-|   	4	|    660175 |
-|   	5	|     53429 |
-|   	6	|      5726 |
-|   	7	|       157 |
-|   	8	|         5 |
+|   	0	|  26176163 |
+|   	1	| 100979326 |
+|   	2	|  25745874 |
+|   	3	|   4526405 |
+|   	4	|    512177 |
+|   	5	|     46749 |
+|   	6	|      4015 |
+|   	7	|       187 |
+|   	8	|         8 |
 
 Note that 0 collisions can occur with an early return in the hash
 table lookup function, such as with empty hash tables.
