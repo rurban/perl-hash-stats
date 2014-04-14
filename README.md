@@ -111,7 +111,7 @@ at the generated model. It is even incredibly simple if you calculate only the n
 dependent on the hash table size (8-15 bits).
 So striking out city for such security claims does not hold.
 The code is just not out yet, and the costs for some slower (cryptographically secure)
-hash functions might be too high. But people already encoded SHA-2 into STMLIB code to
+hash functions might be too high. But people already encoded SHA-2 into SMTLIB code to
 attack bitcoin.
 
 See [blogs.perl.org: statistics-for-perl-hash-tables](http://blogs.perl.org/users/rurban/2014/04/statistics-for-perl-hash-tables.html) for a more detailled description.
