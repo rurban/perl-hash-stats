@@ -1,0 +1,30 @@
+diff --git hv_func.h hv_func.h
+index 191912a..961d7bd 100644
+--- hv_func.h
++++ hv_func.h
+@@ -455,9 +465,10 @@ S_perl_hash_murmur3(const unsigned char * const seed, const unsigned char *ptr,
+ PERL_STATIC_INLINE U32
+ S_perl_hash_djb2(const unsigned char * const seed, const unsigned char *str, const STRLEN len) {
+     const unsigned char * const end = (const unsigned char *)str + len;
+-    U32 hash = *((U32*)seed + len);
++    U32 hash = *((U32*)seed);
+     while (str < end) {
+-        hash = ((hash << 5) + hash) + *str++;
++        hash = ((hash << 5) + hash) + *str;
++        str++;
+     }
+     return hash;
+ }
+@@ -465,9 +476,10 @@ S_perl_hash_djb2(const unsigned char * const seed, const unsigned char *str, con
+ PERL_STATIC_INLINE U32
+ S_perl_hash_sdbm(const unsigned char * const seed, const unsigned char *str, const STRLEN len) {
+     const unsigned char * const end = (const unsigned char *)str + len;
+-    U32 hash = *((U32*)seed + len);
++    U32 hash = *((U32*)seed);
+     while (str < end) {
+-        hash = (hash << 6) + (hash << 16) - hash + *str++;
++        hash = (hash << 6) + (hash << 16) - hash + *str;
++        str++;
+     }
+     return hash;
+ }

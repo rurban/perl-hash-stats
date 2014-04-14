@@ -1,0 +1,127 @@
+From b975d736cfe40a9cf51ec0a44aaba0322fd04347 Mon Sep 17 00:00:00 2001
+From: Reini Urban <rurban@x-ray.at>
+Date: Wed, 9 Apr 2014 00:31:07 -0500
+Subject: [PATCH] -DH debug hash fill, size and collisions
+
+for make test. testing quality of functions and collision strategy
+---
+ doop.c |  2 ++
+ hv.c   | 17 +++++++++++++++++
+ t/TEST |  2 +-
+ 3 files changed, 20 insertions(+), 1 deletion(-)
+
+diff --git doop.c doop.c
+index 5031af8..adf3c06 100644
+--- doop.c
++++ doop.c
+@@ -1278,10 +1278,12 @@ Perl_do_kv(pTHX)
+ 	    SV *tmpstr;
+ 	    PUTBACK;
+ 	    tmpstr = hv_iterval(keys,entry);
++#if 0
+ 	    DEBUG_H(Perl_sv_setpvf(aTHX_ tmpstr, "%lu%%%d=%lu",
+ 			    (unsigned long)HeHASH(entry),
+ 			    (int)HvMAX(keys)+1,
+ 			    (unsigned long)(HeHASH(entry) & HvMAX(keys))));
++#endif
+ 	    SPAGAIN;
+ 	    XPUSHs(tmpstr);
+ 	}
+diff --git hv.c hv.c
+index ef686ab..514a8d0 100644
+--- hv.c
++++ hv.c
+@@ -348,6 +348,9 @@ Perl_hv_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
+     bool is_utf8;
+     int masked_flags;
+     const int return_svp = action & HV_FETCH_JUST_SV;
++#ifdef DEBUGGING
++    unsigned int linear = 0;
++#endif
+ 
+     if (!hv)
+ 	return NULL;
+@@ -634,6 +637,7 @@ Perl_hv_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
+ 	entry = (HvARRAY(hv))[hash & (I32) HvMAX(hv)];
+     }
+     for (; entry; entry = HeNEXT(entry)) {
++        DEBUG_H(linear++);
+ 	if (HeHASH(entry) != hash)		/* strings can't be equal */
+ 	    continue;
+ 	if (HeKLEN(entry) != (I32)klen)
+@@ -706,11 +710,17 @@ Perl_hv_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
+ 	}
+ 	if (flags & HVhek_FREEKEY)
+ 	    Safefree(key);
++
++        /* fill, size, found index in collision list */
++        DEBUG_H(PerlIO_printf(Perl_debug_log, "%lu\t%lu\t%u\n", HvKEYS(hv), HvMAX(hv), linear));
+ 	if (return_svp) {
+ 	    return entry ? (void *) &HeVAL(entry) : NULL;
+ 	}
+ 	return entry;
+     }
++
++    /* fill, size, not found, size of collision list */
++    DEBUG_H(PerlIO_printf(Perl_debug_log, "%lu\t%lu\t%u -\n", HvKEYS(hv), HvMAX(hv), linear));
+ #ifdef DYNAMIC_ENV_FETCH  /* %ENV lookup?  If so, try to fetch the value now */
+     if (!(action & HV_FETCH_ISSTORE) 
+ 	&& SvRMAGICAL((const SV *)hv)
+@@ -961,6 +971,9 @@ S_hv_delete_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
+     HE *const *first_entry;
+     bool is_utf8 = (k_flags & HVhek_UTF8) ? TRUE : FALSE;
+     int masked_flags;
++#ifdef DEBUGGING
++    unsigned int linear = 0;
++#endif
+ 
+     if (SvRMAGICAL(hv)) {
+ 	bool needs_copy;
+@@ -1041,6 +1054,7 @@ S_hv_delete_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
+ 	U8 mro_changes = 0; /* 1 = isa; 2 = package moved */
+ 	GV *gv = NULL;
+ 	HV *stash = NULL;
++        DEBUG_H(linear++);
+ 
+ 	if (HeHASH(entry) != hash)		/* strings can't be equal */
+ 	    continue;
+@@ -1061,6 +1075,7 @@ S_hv_delete_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
+ 	if (HeVAL(entry) == &PL_sv_placeholder) {
+ 	    if (k_flags & HVhek_FREEKEY)
+ 		Safefree(key);
++            DEBUG_H(PerlIO_printf(Perl_debug_log, "%lu\t%lu\t%u DELpl\n", HvKEYS(hv), HvMAX(hv), linear));
+ 	    return NULL;
+ 	}
+ 	if (SvREADONLY(hv) && HeVAL(entry) && SvREADONLY(HeVAL(entry))) {
+@@ -1149,6 +1164,7 @@ S_hv_delete_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
+ 	else if (mro_changes == 2)
+ 	    mro_package_moved(NULL, stash, gv, 1);
+ 
++        DEBUG_H(PerlIO_printf(Perl_debug_log, "%lu\t%lu\t%u DEL+\n", HvKEYS(hv), HvMAX(hv), linear));
+ 	return sv;
+     }
+     if (SvREADONLY(hv)) {
+@@ -1159,6 +1175,7 @@ S_hv_delete_common(pTHX_ HV *hv, SV *keysv, const char *key, STRLEN klen,
+ 
+     if (k_flags & HVhek_FREEKEY)
+ 	Safefree(key);
++    DEBUG_H(PerlIO_printf(Perl_debug_log, "%lu\t%lu\t%u DEL-\n", HvKEYS(hv), HvMAX(hv), linear));
+     return NULL;
+ }
+ 
+diff --git t/TEST t/TEST
+index 96eb6a4..e903da3 100755
+--- t/TEST
++++ t/TEST
+@@ -251,7 +251,7 @@ sub _scan_test {
+ 	test => $test,
+ 	run_dir => $run_dir,
+ 	return_dir => $return_dir,
+-	testswitch => $testswitch,
++	testswitch => $testswitch.' -DH',
+ 	utf8 => $utf8,
+ 	file => $file_opts,
+ 	switch => $switch,
+-- 
+1.9.1
+

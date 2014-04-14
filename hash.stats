@@ -1,0 +1,131 @@
+Counting the collisions with perl hash tables per function.
+(linear chaining in a linked list, subject to collision attacks)
+
+                        collisions (less is better)
+CRC32			1.078
+ONE_AT_A_TIME_HARD	1.092
+SIPHASH			1.091
+ONE_AT_A_TIME		1.098
+ONE_AT_A_TIME_OLD	
+SDBM			
+SUPERFAST		
+DJB2			
+MURMUR3			1.105
+
+See http://blogs.perl.org/users/rurban/2014/04/statistics-for-perl-hash-tables.html
+and https://gist.github.com/rurban/10439033
+ 
+$ tail -n20 hash.result.CRC32
+2 coll:
+        0       26895000x
+        1       98179685x
+        2       25832401x
+        3       5582369x
+        4       660175x
+        5       53429x
+        6       5726x
+        7       157x
+        8       5x
+ 
+3 op:
+        DEL+    2371595x
+        DEL-    63408x
+        -       41471245x
+        DELpl   6x
+ 
+collision cost: 169534934 / # lines: 157208947
+ratio: 1.078
+ 
+$ tail -n20 hash.result.ONE_AT_A_TIME_HARD
+ 
+2 coll:
+        0       19075964x
+        1       76051725x
+        2       19869990x
+        3       4091870x
+        4       577088x
+        5       46416x
+        6       16933x
+        7       346x
+        8       23x
+ 
+3 op:
+        DEL-    47556x
+        -       30553435x
+        DEL+    1521038x
+        DELpl   6x
+ 
+collision cost: 130711951 / # lines: 119730355
+ratio: 1.092
+ 
+$ tail -n20 hash.result.MURMUR3 
+ 
+2 coll:
+	0	24821274x
+	1	99735474x
+	2	26327227x
+	3	6066529x
+	4	862574x
+	5	76627x
+	6	6877x
+	7	276x
+	8	20x
+ 
+3 op:
+	DEL-	65262x
+	DEL+	2379381x
+	-	41634279x
+	DELpl	6x
+ 
+collision cost: 174466300 / # lines: 157896878
+ratio: 1.105
+
+$ tail -n20 hash.result.SIPHASH
+
+2 coll:
+	0	26314186x
+	1	99114872x
+	2	25655322x
+	3	5749479x
+	4	888039x
+	5	205159x
+	6	3449x
+	7	399x
+	8	46x
+	9	16x
+
+3 op:
+	DEL-	65445x
+	DELpl	6x
+	DEL+	2379395x
+	-	41638164x
+
+collision cost: 172275903 / # lines: 157930967
+ratio: 1.091
+
+$ tail -n20 hash.result.ONE_AT_A_TIME
+2 coll:
+	0	25867206x
+	1	98008406x
+	2	27351918x
+	3	5588012x
+	4	836805x
+	5	68047x
+	6	6104x
+	7	203x
+	8	10x
+	9	1x
+	10	53x
+
+3 op:
+	DELpl	6x
+	-	41623366x
+	DEL+	2378959x
+	DEL-	65074x
+
+collision cost: 173202397 / # lines: 157726765
+ratio: 1.098
+
+See more in the individual files for now. Will be updated at the end my testruns.
+CRC32 is so far by far the fastest and produces the least collisions.
+It has a high bias (avalanche), but this didn't show up in this avg testdata.
