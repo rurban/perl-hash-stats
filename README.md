@@ -69,9 +69,15 @@ Larger keysets need to be tied to bigger key-value stores, such as
 [LMDB_File](http://search.cpan.org/dist/LMDB_File/) or at least
 AnyDBM_File, otherwise you'll get a hell lot of collisions.
 
+perl5 should use prime number sized hash tables to reduce collisions
+in the average case. For 32bit the primes can be stored in a constant
+table as in glibc.
+
 
 Number of collisions with CRC32
 ------------------------------
+CRC32 is a good and fast hash function, on SSE4 intel processors or armv7 and armv8 it costs just a few cycles.
+
 
 | collisions|     count |
 |:---------:|----------:|
@@ -110,10 +116,6 @@ though glibc, gcc and libliberty and others switched to open addressing with dou
 where collisions just trigger hash table resizes.
 DJB's DNS server has an explicit check for "hash flooding" attempts.
 Some rare hash tables implementations use rb-trees.
-
-perl5 should also use prime number sized hash tables to reduce
-collisions in the averege case. For 32bit the primes can be stored in
-a constant table as in glibc.
 
 For city there currently exists a simple universal function to easily create collisions per seed.
 Note that this exists for every hash function, just encode your hash SAT solver-friendly and look
