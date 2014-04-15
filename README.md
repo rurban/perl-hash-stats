@@ -124,7 +124,7 @@ The code is just not out yet, and the costs for some slower (cryptographically s
 hash functions might be too high. But people already encoded SHA-2 into SMTLIB code to
 attack bitcoin.
 
-crc is also recommended by [xcore Tip & Tricks: Hash Tables](http://xcore.github.io/doc_tips_and_tricks/hash-tables.html).
+crc is also recommended by [xcore Tip & Tricks: Hash Tables](http://xcore.github.io/doc_tips_and_tricks/hash-tables.html) and also analysed by [Bob Jenkin](http://burtleburtle.net/bob/hash/examhash.html).
 
 See [blogs.perl.org: statistics-for-perl-hash-tables](http://blogs.perl.org/users/rurban/2014/04/statistics-for-perl-hash-tables.html) for a more detailled description, and
 [Emmanuel Goossaert's blog](http://codecapsule.com/2013/05/13/implementing-a-key-value-store-part-5-hash-table-implementations/) compares some hash table implementations and esp. collision handling for efficiency, not security.
