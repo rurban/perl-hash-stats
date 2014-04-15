@@ -9,8 +9,9 @@ Average case (perl core testsuite)
 
 | Hash Function		| collisions| cycles/hash |
 |:------------------|----------:|------------:|
-| CRC32.1			| 1.066		|  29.78	  |
-| CRC32				| 1.078		|  29.78	  |
+| CRC32				| 1.066		|  29.78	  |
+| DJB2.1			| 1.070		|  44.73   	  |
+| CRC32.1			| 1.078		|  29.78	  |
 | SUPERFAST			| 1.081		|  34.72 	  |
 | SDBM.1			| 1.082		|  30.57   	  |
 | ONE_AT_A_TIME_HARD| 1.092		|  83.75	  |
@@ -38,9 +39,8 @@ A hash table size of 7 uses the last 3 bits of the hash function result,
 * collisions are the number of linked list iterations per hash table usage.
 * cycles/hash is measured with [smhasher](https://github.com/rurban/smhasher)
 for 10 byte keys. (see "Small key speed test")
-* SDBM and DJBJ did not produce a workable miniperl. Needed to [patch](https://github.com/rurban/perl-hash-stats/blob/master/sdbm%2Bdjb2.patch) them. Seeing that a HASH=0, effectively creating a long list of linear collisions in HvARRAY[0], does not work in current perl5, makes me feel bad. Note that seed + len is to prevent from the \0 attack.
-* SDBM.1 adds the len to the seed, SDBM not.
-* CRC32 adds the len to the seed, CRC32.1 not.
+* SDBM and DJBJ did not produce a workable miniperl. Needed to [patch](https://github.com/rurban/perl-hash-stats/blob/master/sdbm%2Bdjb2.patch) them.
+* The .1 variants add the len to the seed to fight \0 attacks.
 
 Hash table sizes
 ----------------
@@ -100,11 +100,20 @@ How to get the private random seed is e.g. described in ["REMOTE ALGORITHMIC COM
 RANDOMIZED HASH TABLES", N Bar-Yosef, A Wool - 2009 - Springer](https://www.eng.tau.ac.il/~yash/C2_039_Wool.pdf).
 
 Perl and similar dynamic languages really need to improve their collision algorithm, and choose
-a combination of fast and good enough hash function. None of this is currently implemented.
+a combination of fast and good enough hash function. None of this is currently implemented in
+standard SW besides Kyoto DB, though Knuth proposed to use sorted buckets
+["Ordered hash tables", O Amble, D Knuth 1973](http://comjnl.oxfordjournals.org/content/17/2/135.full.pdf).
 Most technical papers accept degeneration into linear search for bucket collisions as is.
 Notably e.g. even the Linux kernel [F. Weimer, “Algorithmic complexity attacks and the
-linux networking code”, May 2003](http://www.enyo.de/fw/security/notes/linux-dst-cache-dos.html).
+linux networking code”, May 2003](http://www.enyo.de/fw/security/notes/linux-dst-cache-dos.html),
+though glibc, gcc and libliberty and others switched to open addressing with double hashing recently,
+where collisions just trigger hash table resizes.
 DJB's DNS server has an explicit check for "hash flooding" attempts.
+Some rare hash tables implementations use rb-trees.
+
+perl5 should also use prime number sized hash tables to reduce
+collisions in the averege case. For 32bit the primes can be stored in
+a constant table as in glibc.
 
 For city there currently exists a simple universal function to easily create collisions per seed.
 Note that this exists for every hash function, just encode your hash SAT solver-friendly and look
