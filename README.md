@@ -7,21 +7,21 @@ Counting the collisions with perl hash tables per function.
 Average case (perl core testsuite)
 ----------------------------------
 
-| Hash Function		| collisions| cycles/hash |
+| Hash Function     | collisions| cycles/hash |
 |:------------------|----------:|------------:|
-| CRC32				| 1.066		|  29.78	  |
-| DJB2.1			| 1.070		|  44.73   	  |
-| CRC32.1			| 1.078		|  29.78	  |
-| SUPERFAST			| 1.081		|  34.72 	  |
-| SDBM.1			| 1.082		|  30.57   	  |
-| ONE_AT_A_TIME_HARD| 1.092		|  83.75	  |
-| SIPHASH			| 1.091		| 154.68	  |
-| ONE_AT_A_TIME		| 1.098		|  43.62      |
-| ONE_AT_A_TIME_OLD	| 1.100 	|  43.62   	  |
-| MURMUR3			| 1.105		|  34.03 	  |
-| DJB2				| 1.131		|  44.73   	  |
-| SDBM				| 1.146		|  30.57   	  |
-| CITY				|   ?		|  30.13      |
+| CRC32             | 1.066     |    29.78    |
+| DJB2.1            | 1.070     |    44.73    |
+| CRC32.1           | 1.078     |    29.78    |
+| SUPERFAST         | 1.081     |    34.72    |
+| SDBM.1            | 1.082     |    30.57    |
+| ONE_AT_A_TIME_HARD| 1.092     |    83.75    |
+| SIPHASH           | 1.091     |   154.68    |
+| ONE_AT_A_TIME     | 1.098     |    43.62    |
+| ONE_AT_A_TIME_OLD | 1.100     |    43.62    |
+| MURMUR3           | 1.105     |    34.03    |
+| DJB2              | 1.131     |    44.73    |
+| SDBM              | 1.146     |    30.57    |
+| CITY              |   ?       |    30.13    |
 
 
 Less collisions are better, less cycles/hash is faster.
@@ -40,56 +40,62 @@ A hash table size of 7 uses the last 3 bits of the hash function result,
 * cycles/hash is measured with [smhasher](https://github.com/rurban/smhasher)
 for 10 byte keys. (see "Small key speed test")
 * SDBM and DJBJ did not produce a workable miniperl. Needed to [patch](https://github.com/rurban/perl-hash-stats/blob/master/sdbm%2Bdjb2.patch) them.
-* The .1 variants add the len to the seed to fight \0 attacks.
+* The .1 variants add the len to the seed to fight \0 attacks, when users can easily input
+binary keys (i.e. in perl since 5.16).
 
 Hash table sizes
 ----------------
 
-| size		|     count |
-|:---------:|----------:|
-|	0	    |      2403 |
-|	1	    |       383 |
-|	3	    |       434 |
-|	7	    |  30816359 |
-|	15	    |  19761019 |
-|	31	    |  20566188 |
-|	63	    |  30131283 |
-|	127	    |  28054277 |
-|	255	    |  15104276 |
-|	511	    |   7146648 |
-|	1023	|   3701004 |
-|	2047	|   1015462 |
-|	4095	|    217107 |
-|	8191	|    284997 |
-|	16383	|    237284 |
-|	32767	|    169823 |
+| size  |     count |
+|:-----:|----------:|
+|     0 |      2403 |
+|     1 |       383 |
+|     3 |       434 |
+|     7 |  30816359 |
+|    15 |  19761019 |
+|    31 |  20566188 |
+|    63 |  30131283 |
+|   127 |  28054277 |
+|   255 |  15104276 |
+|   511 |   7146648 |
+|  1023 |   3701004 |
+|  2047 |   1015462 |
+|  4095 |    217107 |
+|  8191 |    284997 |
+| 16383 |    237284 |
+| 32767 |    169823 |
 
 Note that perl ony supports int32 (32bit) sized tables, not 64bit arrays.
 Larger keysets need to be tied to bigger key-value stores, such as
 [LMDB_File](http://search.cpan.org/dist/LMDB_File/) or at least
 AnyDBM_File, otherwise you'll get a hell lot of collisions.
 
-perl5 should use prime number sized hash tables to reduce collisions
-in the average case. For 32bit the primes can be stored in a constant
-table as in glibc.
+It should be studied of leaving out one or two sizes and therefore the costly
+rehashing is worthwile. Good candidates for this dataset to skip seem to be
+15 and 63.
+
+For double hashing perl5 need to use prime number sized hash tables to 
+make the 2nd hash function work. For 32bit the primes can be stored
+in a constant table as in glibc.
 
 
 Number of collisions with CRC32
 ------------------------------
-CRC32 is a good and fast hash function, on SSE4 intel processors or armv7 and armv8 it costs just a few cycles.
+CRC32 is a good and fast hash function, on SSE4 intel processors or
+armv7 and armv8 it costs just a few cycles.
 
 
 | collisions|     count |
 |:---------:|----------:|
-|   	0	|  26176163 |
-|   	1	| 100979326 |
-|   	2	|  25745874 |
-|   	3	|   4526405 |
-|   	4	|    512177 |
-|   	5	|     46749 |
-|   	6	|      4015 |
-|   	7	|       187 |
-|   	8	|         8 |
+|        0  |  26176163 |
+|        1  | 100979326 |
+|        2  |  25745874 |
+|        3  |   4526405 |
+|        4  |    512177 |
+|        5  |     46749 |
+|        6  |      4015 |
+|        7  |       187 |
+|        8  |         8 |
 
 Note that 0 collisions can occur with an early return in the hash
 table lookup function, such as with empty hash tables.
@@ -117,14 +123,15 @@ where collisions just trigger hash table resizes.
 DJB's DNS server has an explicit check for "hash flooding" attempts.
 Some rare hash tables implementations use rb-trees.
 
-For city there currently exists a simple universal function to easily create collisions per seed.
+For city there currently exists a simple universal C function to easily create collisions per seed.
 Note that this exists for every hash function, just encode your hash SAT solver-friendly and look
 at the generated model. It is even incredibly simple if you calculate only the needed last bits
 dependent on the hash table size (8-15 bits).
 So striking out city for such security claims does not hold.
 The code is just not out yet, and the costs for some slower (cryptographically secure)
 hash functions might be too high. But people already encoded SHA-2 into SMTLIB code to
-attack bitcoin.
+attack bitcoin, and high-level frameworks such as frama-c, klee or z3 are becoming increasingly
+popular.
 
 crc is recommended by [xcore Tip & Tricks: Hash Tables](http://xcore.github.io/doc_tips_and_tricks/hash-tables.html) and also analysed by [Bob Jenkin](http://burtleburtle.net/bob/hash/examhash.html).
 
