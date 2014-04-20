@@ -119,23 +119,30 @@ Most technical papers accept degeneration into linear search for bucket collisio
 Notably e.g. even the Linux kernel [F. Weimer, “Algorithmic complexity attacks and the
 linux networking code”, May 2003](http://www.enyo.de/fw/security/notes/linux-dst-cache-dos.html),
 though glibc, gcc and libliberty and others switched to open addressing with double hashing recently,
-where collisions just trigger hash table resizes.
+where collisions just trigger hash table resizes, and the choice of the 2nd function will reduce
+collisions dramatically.
 DJB's DNS server has an explicit check for "hash flooding" attempts.
 Some rare hash tables implementations use rb-trees.
 
-For city there currently exists a simple universal C function to easily create collisions per seed.
-Note that this exists for every hash function, just encode your hash SAT solver-friendly and look
-at the generated model. It is even incredibly simple if you calculate only the needed last bits
-dependent on the hash table size (8-15 bits).
-So striking out city for such security claims does not hold.
-The code is just not out yet, and the costs for some slower (cryptographically secure)
-hash functions might be too high. But people already encoded SHA-2 into SMTLIB code to
-attack bitcoin, and high-level frameworks such as frama-c, klee or z3 are becoming increasingly
-popular.
+For city there currently exists a simple universal C function to
+easily create collisions per seed.  crc32 is exploitable even more
+easily.  Note that this exists for every hash function, just encode
+your hash SAT solver-friendly and look at the generated model. It is
+even incredibly simple if you calculate only the needed last bits
+dependent on the hash table size (8-15 bits).  So striking out city
+for such security claims does not hold. The most secure hash function
+can be attacked this way. Any practical attacker has enough time in
+advance to create enough colliding keys dependent only on the random
+seed, and can easily verify it by time measurements.  The code is just
+not out yet, and the costs for some slower (cryptographically secure)
+hash functions might be too high. But people already encoded SHA-2
+into SMTLIB code to attack bitcoin, and high-level frameworks such as
+frama-c, klee or z3 are becoming increasingly popular.
 
-crc is recommended by [xcore Tip & Tricks: Hash Tables](http://xcore.github.io/doc_tips_and_tricks/hash-tables.html) and also analysed by [Bob Jenkin](http://burtleburtle.net/bob/hash/examhash.html).
+crc is recommended by [xcore Tip & Tricks: Hash Tables](http://xcore.github.io/doc_tips_and_tricks/hash-tables.html)
+and also analysed by [Bob Jenkin](http://burtleburtle.net/bob/hash/examhash.html).
 
-See [blogs.perl.org: statistics-for-perl-hash-tables](http://blogs.perl.org/users/rurban/2014/04/statistics-for-perl-hash-tables.html) for a more detailled description, and
+See [blogs.perl.org: statistics-for-perl-hash-tables](http://blogs.perl.org/users/rurban/2014/04/statistics-for-perl-hash-tables.html) for a more detailled earlier description, and
 [Emmanuel Goossaert's blog](http://codecapsule.com/2013/05/13/implementing-a-key-value-store-part-5-hash-table-implementations/) compares some hash table implementations and esp. collision handling for efficiency, not security.
 
 See
