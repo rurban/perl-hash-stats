@@ -142,11 +142,20 @@ frama-c, klee or z3 are becoming increasingly popular.
 crc is recommended by [xcore Tip & Tricks: Hash Tables](http://xcore.github.io/doc_tips_and_tricks/hash-tables.html)
 and also analysed by [Bob Jenkin](http://burtleburtle.net/bob/hash/examhash.html).
 
-See [blogs.perl.org: statistics-for-perl-hash-tables](http://blogs.perl.org/users/rurban/2014/04/statistics-for-perl-hash-tables.html) for a more detailled earlier description, and
-[Emmanuel Goossaert's blog](http://codecapsule.com/2013/05/13/implementing-a-key-value-store-part-5-hash-table-implementations/) compares some hash table implementations and esp. collision handling for efficiency, not security.
 
-See
----
+See also
+--------
 
-* hash.stats for the distribution of the collisions
-* hash.result.* for the table sizes
+* See [blogs.perl.org: statistics-for-perl-hash-tables](http://blogs.perl.org/users/rurban/2014/04/statistics-for-perl-hash-tables.html) for a more detailled earlier description, and
+
+* [Emmanuel Goossaert's blog](http://codecapsule.com/2013/05/13/implementing-a-key-value-store-part-5-hash-table-implementations/) compares some hash table implementations and esp. collision handling for efficiency, not security.
+
+* See [smhasher](https://github.com/rurban/smhasher) for performance and quality tests
+of most known hash functions.
+
+* See [Perfect::Hash](https://github.com/rurban/Perfect-Hash) for benchmarks and
+implementations of **perfect hashes**, i.e. fast lookup in readonly stringmaps.
+
+* _hash.stats_ for the distribution of the collisions
+
+* _hash.result.*_ for the table sizes
