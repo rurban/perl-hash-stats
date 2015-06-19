@@ -7,41 +7,49 @@ Counting the collisions with perl hash tables per function.
 Average case (perl core testsuite)
 ----------------------------------
 
-| Hash Function     | collisions| cycles/hash |
-|:------------------|----------:|------------:|
-| CRC32             | 1.066     |    29.78    |
-| DJB2.1            | 1.070     |    44.73    |
-| CRC32.1           | 1.078     |    29.78    |
-| SUPERFAST         | 1.081     |    34.72    |
-| SDBM.1            | 1.082     |    30.57    |
-| ONE_AT_A_TIME_HARD| 1.092     |    83.75    |
-| SIPHASH           | 1.091     |   154.68    |
-| ONE_AT_A_TIME     | 1.098     |    43.62    |
-| ONE_AT_A_TIME_OLD | 1.100     |    43.62    |
-| MURMUR3           | 1.105     |    34.03    |
-| DJB2              | 1.131     |    44.73    |
-| SDBM              | 1.146     |    30.57    |
-| CITY              |   ?       |    30.13    |
+| Hash Function | collisions|  time[sec] | Quality | cyc/hash |
+|:--------------|----------:|-----------:|---------|---------:|
+| FNV1A		    | 0.862     |   535 sec  |   BAD   |  33.19  |
+| OOAT_OLD	    | 0.861     |   537 sec  |   BAD   |  50.83  |
+| CRC32		    | 0.841     |   538 sec  | INSECURE|  31.27  |
+| SUPERFAST	    | 0.848     |   537 sec  |   BAD   |  27.75  |
+| SDBM		    | 0.874     |   541 sec  |   BAD   |  29.23  |
+| SPOOKY32	    | 0.813     |   546 sec  |  GOOD   |  38.45  |
+| MURMUR64A	    | 0.855     |   546 sec  |   BAD   |  28.80  |
+| MURMUR64B	    | 0.857     |   546 sec  |   BAD   |  27.48  |
+| OOAT_HARD	    | 0.842     |   547 sec  |   BAD   |  61.03  |
+| MURMUR3	    | 0.883     |   547 sec  |  GOOD   |  29.54  |
+| DJB2		    | 0.898     |   547 sec  |   BAD   |  33.78  |
+| METRO64	    | 0.892     |   550 sec  |  GOOD   |  26.78  |
+| OOAT		    | 0.860     |   551 sec  |   BAD   |  ??     |
+| SIPHASH	    | 0.853     |   551 sec  |  GOOD   |  114.48 |
+| METRO64CRC    | 0.872     |   559 sec  |  GOOD   |  23.27  |
 
-
-Less collisions are better, less cycles/hash is faster.
+Less collisions are better, less time is faster.
 A hash table lookup consists of one constant hash function
 (depending only on the length of the key) and then resolving
-0-x collisions (in our avg case 0-8).
+0-x collisions (in our avg case 0-10).
 
-The perl5 testsuite has a key size of median = 20, and avg of 133.2.
-The most commonly used key sizes are 4, 101 and 2, the most common
-hash tables sizes are 7, 63 and 127.
+**Spooky32** creates the least collisions by far and is the fastest of
+the good hash functions here, but only works on 64 bit
+machines. **Murmur3** interestingly creates a lot of collisions, even
+more than the OOAT variants.
+
+**Speed:** Note that hash table speed measured here is a combination of
+code-size, less code - better icache, CPU (cyc/hash) and less
+collisions (better quality, less work). But we only measured the
+primitive linked list implementation yet, which has to chase linked
+list pointers and looses the data cache, unlike with open-addressing.
+
+The short perl5 testsuite (op,base,perf) has a key size of median =
+33, and avg of 83.  The most commonly used key sizes are 4, 101 and
+2, the most common hash tables sizes are 7, 255 and 31.
 
 A hash table size of 7 uses the last 3 bits of the hash function result,
 63 uses only 6 bits of 32 and 127 uses 7 bits.
 
 * collisions are the number of linked list iterations per hash table usage.
-* cycles/hash is measured with [smhasher](https://github.com/rurban/smhasher)
-for 10 byte keys. (see "Small key speed test")
-* SDBM and DJBJ did not produce a workable miniperl. Needed to [patch](https://github.com/rurban/perl-hash-stats/blob/master/sdbm%2Bdjb2.patch) them.
-* The .1 variants add the len to the seed to fight \0 attacks, when users can easily input
-binary keys (i.e. in perl since 5.16).
+* quality and cycles/hash is measured with [smhasher](https://github.com/rurban/smhasher)
 
 Hash table sizes
 ----------------
@@ -82,7 +90,8 @@ in a constant table as in glibc.
 Number of collisions with CRC32
 ------------------------------
 CRC32 is a good and fast hash function, on SSE4 intel processors or
-armv7 and armv8 it costs just a few cycles.
+armv7 and armv8 it costs just a few cycles, but unfortunately too trivial
+to create collisions when allowing binary keys, the worst case.
 
 
 | collisions|     count |
@@ -124,7 +133,7 @@ collisions dramatically.
 DJB's DNS server has an explicit check for "hash flooding" attempts.
 Some rare hash tables implementations use rb-trees.
 
-For city there currently exists a simple universal C function to
+For City there currently exists a simple universal C function to
 easily create collisions per seed.  crc32 is exploitable even more
 easily.  Note that this exists for every hash function, just encode
 your hash SAT solver-friendly and look at the generated model. It is
