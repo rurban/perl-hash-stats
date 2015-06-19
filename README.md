@@ -9,20 +9,20 @@ Average case (perl core testsuite)
 
 | Hash Function | collisions|  time[sec] | Quality | cyc/hash |
 |:--------------|----------:|-----------:|---------|---------:|
-| FNV1A		    | 0.862     |   535 sec  |   BAD   |  33.19  |
-| OOAT_OLD	    | 0.861     |   537 sec  |   BAD   |  50.83  |
-| CRC32		    | 0.841     |   538 sec  | INSECURE|  31.27  |
-| SUPERFAST	    | 0.848     |   537 sec  |   BAD   |  27.75  |
-| SDBM		    | 0.874     |   541 sec  |   BAD   |  29.23  |
-| SPOOKY32	    | 0.813     |   546 sec  |  GOOD   |  38.45  |
-| MURMUR64A	    | 0.855     |   546 sec  |   BAD   |  28.80  |
-| MURMUR64B	    | 0.857     |   546 sec  |   BAD   |  27.48  |
-| OOAT_HARD	    | 0.842     |   547 sec  |   BAD   |  61.03  |
-| MURMUR3	    | 0.883     |   547 sec  |  GOOD   |  29.54  |
-| DJB2		    | 0.898     |   547 sec  |   BAD   |  33.78  |
-| METRO64	    | 0.892     |   550 sec  |  GOOD   |  26.78  |
-| OOAT		    | 0.860     |   551 sec  |   BAD   |  ??     |
-| SIPHASH	    | 0.853     |   551 sec  |  GOOD   |  114.48 |
+| FNV1A	        | 0.862     |   535 sec  |   BAD   |  33.19  |
+| OOAT_OLD      | 0.861     |   537 sec  |   BAD   |  50.83  |
+| CRC32	        | 0.841     |   538 sec  | INSECURE|  31.27  |
+| SUPERFAST     | 0.848     |   537 sec  |   BAD   |  27.75  |
+| SDBM	        | 0.874     |   541 sec  |   BAD   |  29.23  |
+| SPOOKY32      | 0.813     |   546 sec  |  GOOD   |  38.45  |
+| MURMUR64A     | 0.855     |   546 sec  |   BAD   |  28.80  |
+| MURMUR64B     | 0.857     |   546 sec  |   BAD   |  27.48  |
+| OOAT_HARD     | 0.842     |   547 sec  |   BAD   |  61.03  |
+| MURMUR3       | 0.883     |   547 sec  |  GOOD   |  29.54  |
+| DJB2          | 0.898     |   547 sec  |   BAD   |  33.78  |
+| METRO64       | 0.892     |   550 sec  |  GOOD   |  26.78  |
+| OOAT          | 0.860     |   551 sec  |   BAD   |  ??     |
+| SIPHASH       | 0.853     |   551 sec  |  GOOD   |  114.48 |
 | METRO64CRC    | 0.872     |   559 sec  |  GOOD   |  23.27  |
 
 Less collisions are better, less time is faster.
