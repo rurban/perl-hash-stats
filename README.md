@@ -30,16 +30,27 @@ A hash table lookup consists of one constant hash function
 (depending only on the length of the key) and then resolving
 0-x collisions (in our avg case 0-10).
 
-**Spooky32** creates the least collisions by far and is the fastest of
-the good hash functions here, but only works on 64 bit
-machines. **Murmur3** interestingly creates a lot of collisions, even
-more than the OOAT variants.
-
 **Speed:** Note that hash table speed measured here is a combination of
 code-size, less code - better icache, CPU (cyc/hash) and less
 collisions (better quality, less work). But we only measured the
 primitive linked list implementation yet, which has to chase linked
 list pointers and looses the data cache, unlike with open-addressing.
+
+**FNV1a** is the current leader. Even if it creates more collisions
+than a good hash, and is not as fast in bulk as others, it is smaller
+and faster when being used inlined in hash table functions. I'm
+testing the [sanmayce](http://www.sanmayce.com/Fastest_Hash/) bigger
+and unrolled variants now to confirm the theory.
+
+**Spooky32** creates the least collisions by far and is the fastest of
+the good hash functions here, but only works on 64 bit
+machines. **Murmur3** interestingly creates a lot of collisions, even
+more than the OOAT variants.
+
+The individually fastest hash function, which should be used for
+checksumming larger files, **METRO**, does not perform good as hash
+table function at all. It has too much code and it is not optimized
+to avoid collisions with ASCII text keys.
 
 The short perl5 testsuite (op,base,perf) has a key size of median =
 33, and avg of 83.  The most commonly used key sizes are 4, 101 and
