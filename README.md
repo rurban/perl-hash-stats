@@ -159,8 +159,11 @@ hash functions might be too high. But people already encoded SHA-2
 into SMTLIB code to attack bitcoin, and high-level frameworks such as
 frama-c, klee or z3 are becoming increasingly popular.
 
-crc is recommended by [xcore Tip & Tricks: Hash Tables](http://xcore.github.io/doc_tips_and_tricks/hash-tables.html)
-and also analysed by [Bob Jenkin](http://burtleburtle.net/bob/hash/examhash.html).
+crc-32c, the Castagnoli variant used in new hardware, is recommended
+by
+[xcore Tip & Tricks: Hash Tables](http://xcore.github.io/doc_tips_and_tricks/hash-tables.html)
+and also analysed by
+[Bob Jenkin](http://burtleburtle.net/bob/hash/examhash.html).
 
 cachegrind cost model
 ---------------------
