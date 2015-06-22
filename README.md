@@ -185,10 +185,14 @@ so we count 10 insn for a L1 (_first line_) miss, and 200 insn for a
 LL (_last line_) miss.
 The baseline `-e0` is 12774328.
 
-    $ valgrind --tool=cachegrind /usr/src/perl/blead/cperl/miniperl -e0 2>&1 | egrep 'rate|refs|misses' | ./cachegrind-cost.pl
+    $ valgrind --tool=cachegrind /usr/src/perl/blead/cperl/miniperl -e0 2>&1 |\
+      egrep 'rate|refs|misses' |\
+      ./cachegrind-cost.pl
     12774328 
 
-    $ ./cachegrind-cost.pl log.hash-speed |sort -nk2 -t$'\t'| awk '{print $1 "\t", $2 - 12774328}'
+    $ ./cachegrind-cost.pl log.hash-speed |\
+      sort -nk2 -t$'\t'| \
+      awk '{print $1 "\t", $2 - 12774328}'
 
 | hash       |cost [insn]| notes        |
 |------------|--------:|--------------|
