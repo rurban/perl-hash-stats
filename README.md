@@ -190,18 +190,18 @@ LL (_last line_) miss.
 |------------|----------:|--------------|
 | CRC32      | 12784453  | x86\_64 only, insecure |
 | FNV1A      | 12795316  | bad |
-| FNV1A_YT   | 12828301  | bad |
+| FNV1A\_YT  | 12828301  | bad |
 | SDBM       | 12839245  | bad |
-| MURMUR64A	 | 12839299  |     |
-| MURMUR64B	 | 12841372  |     |
+| MURMUR64A	 | 12839299  | bad |
+| MURMUR64B	 | 12841372  | bad |
 | DJB2       | 12847972  | bad |
 | METRO64CRC | 12848269  | x86\_64 only |
-| METRO64    | 12848838  |     |
+| METRO64    | 12848838  | x86\_64 only |
 | SUPERFAST  | 12857381  | bad |
 | OAAT_OLD   | 12869646  | bad |
 | MURMUR3    | 12870102  |     |
 | OOAT       | 12870735  | bad |
-| SPOOKY32   | 12884726  |     |
+| SPOOKY32   | 12884726  | x86\_64 only |
 | OOAT_HARD  | 12901549  | bad |
 | SIPHASH    | 12915041  |     |
 
