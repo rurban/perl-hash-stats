@@ -162,6 +162,46 @@ frama-c, klee or z3 are becoming increasingly popular.
 crc is recommended by [xcore Tip & Tricks: Hash Tables](http://xcore.github.io/doc_tips_and_tricks/hash-tables.html)
 and also analysed by [Bob Jenkin](http://burtleburtle.net/bob/hash/examhash.html).
 
+cachegrind cost model
+---------------------
+
+Instead of costly benchmarking, we can count the instructions via cachegrind.
+Thanks to davem for this trick.
+
+We create miniperl's for all our hash funcs. I've add a new `Configure -Dhash_func=$h` config variable for this, but a `-DPERL_HASH_FUNC_$h` is also enough.
+
+    for m in miniperl-*; do
+      echo $m;
+      valgrind --tool=cachegrind ./$m -e'my %h=("foo"=>1);$h{foo} for 0..100' 2>&1 | \
+        egrep 'rate|refs|misses';
+    done
+
+And we write a [simple script](https://github.com/rurban/perl-hash-stats/blob/master/cachegrind-cost.pl) to apply the cost functions for various
+Lx cache misses. cachegrind can only do the first and last cache line,
+so we count 10 insn for a L1 (_first line_) miss, and 200 insn for a
+LL (_last line_) miss.
+
+    $ ./cachegrind-cost.pl log.hash-speed |sort -nk2 -t$'\t'
+
+| hash       |cost [insn]| notes        |
+|------------|----------:|--------------|
+| CRC32      | 12784453  | x86\_64 only, insecure |
+| FNV1A      | 12795316  | bad |
+| FNV1A_YT   | 12828301  | bad |
+| SDBM       | 12839245  | bad |
+| MURMUR64A	 | 12839299  |     |
+| MURMUR64B	 | 12841372  |     |
+| DJB2       | 12847972  | bad |
+| METRO64CRC | 12848269  | x86\_64 only |
+| METRO64    | 12848838  |     |
+| SUPERFAST  | 12857381  | bad |
+| OAAT_OLD   | 12869646  | bad |
+| MURMUR3    | 12870102  |     |
+| OOAT       | 12870735  | bad |
+| SPOOKY32   | 12884726  |     |
+| OOAT_HARD  | 12901549  | bad |
+| SIPHASH    | 12915041  |     |
+
 
 See also
 --------
