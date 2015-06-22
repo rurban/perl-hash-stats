@@ -183,27 +183,31 @@ And we write a [simple script](https://github.com/rurban/perl-hash-stats/blob/ma
 Lx cache misses. cachegrind can only do the first and last cache line,
 so we count 10 insn for a L1 (_first line_) miss, and 200 insn for a
 LL (_last line_) miss.
+The baseline `-e0` is 12774328.
 
-    $ ./cachegrind-cost.pl log.hash-speed |sort -nk2 -t$'\t'
+    $ valgrind --tool=cachegrind /usr/src/perl/blead/cperl/miniperl -e0 2>&1 | egrep 'rate|refs|misses' | ./cachegrind-cost.pl
+    12774328 
+
+    $ ./cachegrind-cost.pl log.hash-speed |sort -nk2 -t$'\t'| awk '{print $1 "\t", $2 - 12774328}'
 
 | hash       |cost [insn]| notes        |
-|------------|----------:|--------------|
-| CRC32      | 12784453  | x86\_64 only, insecure |
-| FNV1A      | 12795316  | bad |
-| FNV1A\_YT  | 12828301  | bad |
-| SDBM       | 12839245  | bad |
-| MURMUR64A	 | 12839299  | bad |
-| MURMUR64B	 | 12841372  | bad |
-| DJB2       | 12847972  | bad |
-| METRO64CRC | 12848269  | x86\_64 only |
-| METRO64    | 12848838  | x86\_64 only |
-| SUPERFAST  | 12857381  | bad |
-| OAAT_OLD   | 12869646  | bad |
-| MURMUR3    | 12870102  |     |
-| OOAT       | 12870735  | bad |
-| SPOOKY32   | 12884726  | x86\_64 only |
-| OOAT_HARD  | 12901549  | bad |
-| SIPHASH    | 12915041  |     |
+|------------|--------:|--------------|
+| CRC32      | 10125   | x86\_64 only, insecure |
+| FNV1A      | 20988   | bad |
+| FNV1A\_YT  | 53973   | bad |
+| SDBM       | 64917   | bad |
+| MURMUR64A	 | 64971   | bad |
+| MURMUR64B	 | 67044   | bad |
+| DJB2       | 73644   | bad |
+| METRO64CRC | 73941   | x86\_64 only |
+| METRO64    | 74510   | x86\_64 only |
+| SUPERFAST  | 83053   | bad |
+| OAAT_OLD   | 95318   | bad |
+| MURMUR3    | 95774   |     |
+| OOAT       | 96407   | bad |
+| SPOOKY32   | 110398  | x86\_64 only |
+| OOAT_HARD  | 127221  | bad |
+| SIPHASH    | 140713  |     |
 
 
 See also
