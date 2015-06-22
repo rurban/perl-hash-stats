@@ -200,16 +200,16 @@ The baseline `-e0` is 12774328.
 | FNV1A      | 20988   | bad |
 | FNV1A\_YT  | 53973   | bad |
 | SDBM       | 64917   | bad |
-| MURMUR64A	 | 64971   | bad |
+| MURMUR64A	 | 64971   | 64-bit only |
 | MURMUR64B	 | 67044   | bad |
 | DJB2       | 73644   | bad |
 | METRO64CRC | 73941   | x86\_64 only |
-| METRO64    | 74510   | x86\_64 only |
+| METRO64    | 74510   | 64-bit only |
 | SUPERFAST  | 83053   | bad |
 | OAAT_OLD   | 95318   | bad |
 | MURMUR3    | 95774   |     |
 | OOAT       | 96407   | bad |
-| SPOOKY32   | 110398  | x86\_64 only |
+| SPOOKY32   | 110398  | 64-bit only |
 | OOAT_HARD  | 127221  | bad |
 | SIPHASH    | 140713  |     |
 
