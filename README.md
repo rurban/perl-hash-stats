@@ -219,7 +219,8 @@ Fill rates
 
 Below are graphs testing the fill rates from 50% up to 100%, which
 is the current default.  The usual fill rate is 80-100%, 50% for open
-addressing, and up to 97% for very good hash functions.
+addressing, and up to 97% for very good hash functions, like CRC32
+or Spooky32.
 
 Currently tested is only the default and slow
 `PERL_PERTURB_KEYS_RANDOM` strategy, not the other strategies
