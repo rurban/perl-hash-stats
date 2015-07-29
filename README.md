@@ -30,22 +30,23 @@ A hash table lookup consists of one constant hash function
 (depending only on the length of the key) and then resolving
 0-x collisions (in our avg case 0-10).
 
-**Speed:** Note that hash table speed measured here is a combination of
-code-size, less code - better icache, CPU (cyc/hash) and less
+**Speed:** Note that hash table speed measured here is a combination
+of code-size, less code - better icache, CPU (cyc/hash) and less
 collisions (better quality, less work). But we only measured the
-primitive linked list implementation yet, which has to chase linked
-list pointers and looses the data cache, unlike with open-addressing.
+primitive linked list implementation with 100% fill rate yet, which
+has to chase linked list pointers and looses the data cache, unlike
+with open-addressing.
 
 **FNV1a** is the current leader. Even if it creates more collisions
 than a good hash, and is not as fast in bulk as others, it is smaller
-and faster when being used inlined in hash table functions. I'm
+and faster when being used inlined in hash table functions. Confirmed with
 testing the [sanmayce](http://www.sanmayce.com/Fastest_Hash/) bigger
-and unrolled variants now to confirm the theory.
+and unrolled variant.
 
-**Spooky32** creates the least collisions by far and is the fastest of
-the good hash functions here, but only works on 64 bit
-machines. **Murmur3** interestingly creates a lot of collisions, even
-more than the OOAT variants.
+**Spooky32**, Bob Jenkins' latest creation, creates the least
+collisions by far and is the fastest of the good hash functions here,
+but only works on 64 bit machines. **Murmur3** interestingly creates a
+lot of collisions, even more than the simple old OOAT variants.
 
 The individually fastest hash function, which should be used for
 checksumming larger files, **METRO**, does not perform good as hash
@@ -196,14 +197,14 @@ The baseline `-e0` is 12774328.
 
 | hash       |cost [insn]| notes        |
 |------------|--------:|--------------|
-| CRC32      | 10125   | x86\_64 only, insecure |
+| CRC32      | 10125   | modern CPU only, insecure |
 | FNV1A      | 20988   | bad |
 | FNV1A\_YT  | 53973   | bad |
 | SDBM       | 64917   | bad |
 | MURMUR64A	 | 64971   | 64-bit only |
 | MURMUR64B	 | 67044   | bad |
 | DJB2       | 73644   | bad |
-| METRO64CRC | 73941   | x86\_64 only |
+| METRO64CRC | 73941   | modern CPU only |
 | METRO64    | 74510   | 64-bit only |
 | SUPERFAST  | 83053   | bad |
 | OAAT_OLD   | 95318   | bad |
@@ -213,6 +214,22 @@ The baseline `-e0` is 12774328.
 | OOAT_HARD  | 127221  | bad |
 | SIPHASH    | 140713  |     |
 
+Fill rates
+----------
+
+Below are graphs testing the fill rates from 50% up to 100%, which
+is the current default.  The usual fill rate is 80-100%, 50% for open
+addressing, and up to 97% for very good hash functions.
+
+Currently tested is only the default and slow
+`PERL_PERTURB_KEYS_RANDOM` strategy, not the other strategies
+`PERL_PERTURB_KEYS_DISABLED`, `PERL_PERTURB_KEYS_DETERMINISTIC` and my
+`new PERL_PERTURB_KEYS_TOP` to move every found bucket to the top, the
+usually fastest strategy for linked lists.
+
+![OOTA_HARD](hash-fillrate-def-OOAT_HARD.png)
+
+![FNV1A](hash-fillrate-def-FNV1A.png)
 
 See also
 --------
